@@ -13,6 +13,8 @@
   printf("[%s:%d] " fmt "\n", __FILE__, __LINE__, ##__VA_ARGS__)
 typedef unsigned char byte;
 
+// TODO: Implemente a dynamic line reader that can handle lines of arbitrary
+// length
 char *readline(char *src, size_t max_size, FILE *file) {
   size_t len = 0;
   int c;
@@ -66,6 +68,7 @@ int main(int argc, char *argv[]) {
     LOG("line=%s", line);
     memset(line, 0, sizeof(line));
   }
+
   fclose(fptr);
   free(namefile);
   return EXIT_SUCCESS;
