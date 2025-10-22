@@ -3,9 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define FAILURE -1
-#define MIN_LINE_SIZE 128
-#define MAX_LINE_SIZE 128
+#define INVALID_MEMORY_ERROR -2
+#define END_OF_FILE -3
+
+#define MIN_LINE_SIZE 4
+#define MAX_LINE_SIZE 32
 #define SUCCESS 0
 
 // ## is used to handle the case when no variable arguments are passed
@@ -13,11 +15,16 @@
   printf("[%s:%d] " fmt "\n", __FILE__, __LINE__, ##__VA_ARGS__)
 typedef unsigned char byte;
 
-// TODO: Implemente a dynamic line reader that can handle lines of arbitrary
-// length
-char *readline(char *src, size_t max_size, FILE *file) {
+int readline(byte **str, size_t max_size, FILE *file) {
   size_t len = 0;
   int c;
+
+  if (str == NULL) {
+    LOG("Input string pointer is NULL");
+    return INVALID_MEMORY_ERROR;
+  }
+
+  byte *ptr = NULL;
 
   while (1) {
     c = fgetc(file);
@@ -25,14 +32,27 @@ char *readline(char *src, size_t max_size, FILE *file) {
       break;
     }
 
-    src[len++] = (byte)c;
+    if (len == max_size) {
+      max_size *= 2;
+      ptr = realloc(*str, max_size);
+      if (ptr == NULL) {
+        LOG("Realloc failed");
+        free(*str);
+        *str = NULL;
+        return INVALID_MEMORY_ERROR;
+      }
+      *str = ptr;
+    }
+
+    (*str)[len++] = (byte)c;
   }
 
   if (len == 0 && c == EOF) {
-    return NULL;
+    return END_OF_FILE;
   }
 
-  return src;
+  (*str)[len] = '\0';
+  return SUCCESS;
 }
 
 int main(int argc, char *argv[]) {
@@ -58,17 +78,24 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
 
-  char line[MAX_LINE_SIZE];
-  char *ret;
+  size_t size = MAX_LINE_SIZE * sizeof(byte);
+  byte *line = malloc(size);
+  int ret;
+  int count = 0;
+
+  LOG("Size of line buffer=%zu", size);
   while (1) {
-    ret = readline(line, MAX_LINE_SIZE, fptr);
-    if (ret == NULL) {
+    ret = readline(&line, size, fptr);
+    if (ret != SUCCESS) {
       break;
     }
+    count++;
     LOG("line=%s", line);
-    memset(line, 0, sizeof(line));
   }
 
+  LOG("Total lines read=%d", count);
+
+  free(line);
   fclose(fptr);
   free(namefile);
   return EXIT_SUCCESS;
