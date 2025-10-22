@@ -3,39 +3,31 @@
 #include <string.h>
 
 #define ERROR_TO_READ_FILE -1
-
+// ## is used to handle the case when no variable arguments are passed
+#define LOG(fmt, ...)                                                          \
+  printf("%s:%d" fmt "\n", __FILE__, __LINE__, ##__VA_ARGS__)
 typedef unsigned char byte;
-
-int readline(FILE *fptr, byte *out) {
-  int n = 0;
-  int size = 128;
-  // If out has been allocated previously, this will cause a memory leak
-  out = malloc(size + 1);
-  int ch;
-
-  return ERROR_TO_READ_FILE;
-}
 
 int main(int argc, char *argv[]) {
   int i = 0;
 
   if (argc <= 1) {
-    printf("No command line arguments passed\n");
+    LOG("No command line arguments passed");
     return EXIT_FAILURE;
   }
 
-  printf("cmdline args count=%d", argc);
-  printf("\nexe name=%s", argv[0]);
+  LOG("cmdline args count=%d", argc);
+  LOG("exe name=%s", argv[0]);
 
   char *namefile = malloc(strlen(argv[1]) + 1);
   strcpy(namefile, argv[1]);
 
-  printf("\nfilename=%s\n", namefile);
+  LOG("filename=%s", namefile);
 
   FILE *fptr;
   fptr = fopen(namefile, "r");
   if (fptr == NULL) {
-    printf("Error! Could not open file %s\n", namefile);
+    LOG("Error! Could not open file %s", namefile);
     return EXIT_FAILURE;
   }
 
