@@ -19,15 +19,9 @@ int splitline(char *line, size_t size, const char *delimiter) {
 int readline(char **str, size_t max_size, FILE *file) {
   size_t len = 0;
   int c;
-
-  if (str == NULL) {
-    LOG("Input string pointer is NULL");
-    return INVALID_MEMORY_ERROR;
-  }
+  char *ptr = NULL;
 
   IF_PTR_NULL(str, { return INVALID_MEMORY_ERROR; });
-
-  char *ptr = NULL;
 
   while (1) {
     c = fgetc(file);
@@ -38,12 +32,10 @@ int readline(char **str, size_t max_size, FILE *file) {
     if (len == max_size) {
       max_size *= 2;
       ptr = realloc(*str, max_size);
-      if (ptr == NULL) {
-        LOG("Realloc failed");
-        free(*str);
-        *str = NULL;
+      IF_PTR_NULL(ptr, {
+        FREE_AND_NULL(*str);
         return INVALID_MEMORY_ERROR;
-      }
+      });
       *str = ptr;
     }
 
