@@ -25,6 +25,8 @@ int readline(char **str, size_t max_size, FILE *file) {
     return INVALID_MEMORY_ERROR;
   }
 
+  IF_PTR_NULL(str, { return INVALID_MEMORY_ERROR; });
+
   char *ptr = NULL;
 
   while (1) {
