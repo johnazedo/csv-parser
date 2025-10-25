@@ -5,6 +5,12 @@
 #define LOG(fmt, ...)                                                          \
   printf("[%s:%d] " fmt "\n", __FILE__, __LINE__, ##__VA_ARGS__)
 
+#define FREE_AND_NULL(ptr)                                                     \
+  do {                                                                         \
+    free(ptr);                                                                 \
+    ptr = NULL;                                                                \
+  } while (0)
+
 int splitline(char *line, size_t size, const char *delimiter);
 int readline(char **str, size_t max_size, FILE *file);
 

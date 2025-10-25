@@ -25,6 +25,7 @@ int main(int argc, char *argv[]) {
     LOG("Error! Could not open file %s", namefile);
     return EXIT_FAILURE;
   }
+  FREE_AND_NULL(namefile);
 
   size_t size = MAX_LINE_SIZE * sizeof(char);
   char *line = malloc(size);
@@ -41,16 +42,11 @@ int main(int argc, char *argv[]) {
     count++;
     LOG("line=%s", line);
     splitline(line, size, &delimiter);
-
-    if (count == 10) {
-      break;
-    }
   }
 
   LOG("Total lines read=%d", count);
 
-  free(line);
+  FREE_AND_NULL(line);
   fclose(fptr);
-  free(namefile);
   return EXIT_SUCCESS;
 }
