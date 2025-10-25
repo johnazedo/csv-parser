@@ -1,0 +1,56 @@
+#include "utils.h"
+#include "values.h"
+#include <stdlib.h>
+#include <string.h>
+
+int main(int argc, char *argv[]) {
+  int i = 0;
+
+  if (argc <= 1) {
+    LOG("No command line arguments passed");
+    return EXIT_FAILURE;
+  }
+
+  LOG("cmdline args count=%d", argc);
+  LOG("exe name=%s", argv[0]);
+
+  char *namefile = malloc(strlen(argv[1]) + 1);
+  strcpy(namefile, argv[1]);
+
+  LOG("filename=%s", namefile);
+
+  FILE *fptr;
+  fptr = fopen(namefile, "r");
+  if (fptr == NULL) {
+    LOG("Error! Could not open file %s", namefile);
+    return EXIT_FAILURE;
+  }
+
+  size_t size = MAX_LINE_SIZE * sizeof(char);
+  char *line = malloc(size);
+  int ret;
+  int count = 0;
+  const char delimiter = ';';
+
+  LOG("Size of line buffer=%zu", size);
+  while (1) {
+    ret = readline(&line, size, fptr);
+    if (ret != SUCCESS) {
+      break;
+    }
+    count++;
+    LOG("line=%s", line);
+    splitline(line, size, &delimiter);
+
+    if (count == 10) {
+      break;
+    }
+  }
+
+  LOG("Total lines read=%d", count);
+
+  free(line);
+  fclose(fptr);
+  free(namefile);
+  return EXIT_SUCCESS;
+}
