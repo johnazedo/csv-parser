@@ -3,6 +3,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAX_SYMBOL_SIZE 7
+
+struct stock {
+  char symbol[MAX_SYMBOL_SIZE + 1];
+  float price;
+  int volume;
+  float net_worth;
+};
+
 int main(int argc, char *argv[]) {
   int i = 0;
 
@@ -21,10 +30,10 @@ int main(int argc, char *argv[]) {
 
   FILE *fptr;
   fptr = fopen(namefile, "r");
-  if (fptr == NULL) {
+  IF_PTR_NULL(fptr, {
     LOG("Error! Could not open file %s", namefile);
     return EXIT_FAILURE;
-  }
+  });
   FREE_AND_NULL(namefile);
 
   size_t size = MAX_LINE_SIZE * sizeof(char);
