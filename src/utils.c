@@ -21,7 +21,9 @@ int readline(char **str, size_t max_size, FILE *file) {
   int c;
   char *ptr = NULL;
 
-  IF_PTR_NULL(str, { return INVALID_MEMORY_ERROR; });
+  if (ptr == NULL) {
+    return INVALID_MEMORY_ERROR;
+  }
 
   while (1) {
     c = fgetc(file);
@@ -32,10 +34,10 @@ int readline(char **str, size_t max_size, FILE *file) {
     if (len == max_size) {
       max_size *= 2;
       ptr = realloc(*str, max_size);
-      IF_PTR_NULL(ptr, {
+      if (ptr == NULL) {
         FREE_AND_NULL(*str);
         return INVALID_MEMORY_ERROR;
-      });
+      }
       *str = ptr;
     }
 

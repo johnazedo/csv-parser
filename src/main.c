@@ -30,10 +30,11 @@ int main(int argc, char *argv[]) {
 
   FILE *fptr;
   fptr = fopen(namefile, "r");
-  IF_PTR_NULL(fptr, {
+
+  if (fptr == NULL) {
     LOG("Error! Could not open file %s", namefile);
     return EXIT_FAILURE;
-  });
+  }
   FREE_AND_NULL(namefile);
 
   size_t size = MAX_LINE_SIZE * sizeof(char);
